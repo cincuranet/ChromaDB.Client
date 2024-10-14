@@ -1,8 +1,13 @@
 ﻿using System.Diagnostics;
 using ChromaDB.Client;
 
+// Versioning (J)
+// Query lang (Sam)
+
+// include: Enum
 var configOptions = new ConfigurationOptions(uri: "http://localhost:8000/api/v1/");
 using var httpClient = new ChromaDBHttpClient(configOptions);
+// accept options as arguments
 var client = new ChromaDBClient(configOptions, httpClient);
 
 Console.WriteLine((await client.GetVersion()).Data);

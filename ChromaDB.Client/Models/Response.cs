@@ -5,6 +5,7 @@ namespace ChromaDB.Client.Models;
 
 public sealed class Response<T>
 {
+	// expose?
 	public HttpStatusCode StatusCode { get; }
 	public T? Data { get; }
 	public string? ErrorMessage { get; }

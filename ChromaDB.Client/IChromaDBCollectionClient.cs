@@ -2,11 +2,14 @@
 
 namespace ChromaDB.Client;
 
+//embedding -> ROM<float>
 public interface IChromaDBCollectionClient
 {
 	Collection Collection { get; }
 
+	// single overload
 	Task<Response<List<CollectionEntry>>> Get(List<string>? ids = null, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, int? limit = null, int? offset = null, List<string>? include = null);
+	// single List overload
 	Task<Response<List<List<CollectionQueryEntry>>>> Query(List<List<float>> queryEmbeddings, int nResults = 10, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, List<string>? include = null);
 	Task<Response<Response.Empty>> Add(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null);
 	Task<Response<Response.Empty>> Update(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null);

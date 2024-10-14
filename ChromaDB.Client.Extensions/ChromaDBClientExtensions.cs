@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ChromaDB.Client.Extensions;
 
+// DependencyInjection
 public static class ChromaDBClientExtensions
 {
 	public static void AddChromaDBClient(this IServiceCollection services, Func<ConfigurationOptions?, ConfigurationOptions>? configurationOptions = null)

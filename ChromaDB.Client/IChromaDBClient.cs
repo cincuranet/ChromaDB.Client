@@ -4,6 +4,9 @@ namespace ChromaDB.Client;
 
 public interface IChromaDBClient
 {
+	// Collection -> ChromaCollection
+	// no Response<T> -> Task<T> instead and throw
+	// remove interface
 	Task<Response<Collection>> GetCollection(string name, string? tenant = null, string? database = null);
 	Task<Response<List<Collection>>> ListCollections(string? tenant = null, string? database = null);
 	Task<Response<Heartbeat>> Heartbeat();
