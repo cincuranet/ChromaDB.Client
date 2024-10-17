@@ -272,14 +272,14 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	static readonly string Doc1 = "Doc1";
 	static readonly string Doc2 = "Doc2";
 
-	async Task<ChromaDBCollectionClient> Init()
+	async Task<ChromaCollectionClient> Init()
 	{
 		var name = $"collection{Random.Shared.Next()}";
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var collectionResponse = await client.CreateCollection(name);
 		Assert.That(collectionResponse.Success, Is.True);
 		var collection = collectionResponse.Data!;
-		var collectionClient = new ChromaDBCollectionClient(collection, ConfigurationOptions, HttpClient);
+		var collectionClient = new ChromaCollectionClient(collection, ConfigurationOptions, HttpClient);
 		var addResponse = await collectionClient.Add([Id1, Id2],
 			embeddings: [Embeddings1, Embeddings2],
 			metadatas: [Metadata1, Metadata2],

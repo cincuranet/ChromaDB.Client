@@ -8,14 +8,14 @@ public class ClientTests : ChromaDBTestsBase
 	[Test]
 	public async Task NoAuth()
 	{
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		await Assert.ThatAsync(client.Heartbeat, Throws.Nothing);
 	}
 
 	[Test]
 	public async Task HeartbeatSimple()
 	{
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.Heartbeat();
 		Assert.That(result.Success, Is.True);
 		Assert.That(result.Data, Is.Not.Null);
@@ -25,7 +25,7 @@ public class ClientTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetVersionSimple()
 	{
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.GetVersion();
 		Assert.That(result.Success, Is.True);
 		Assert.That(result.Data, Is.Not.Null.And.Not.Empty);
@@ -37,7 +37,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var name = $"collection{Random.Shared.Next()}";
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		await client.CreateCollection(name);
 		var result = await client.GetCollection(name);
 		Assert.That(result.Success, Is.True);
@@ -50,7 +50,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var names = new[] { $"collection{Random.Shared.Next()}", $"collection{Random.Shared.Next()}" };
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		await client.CreateCollection(names[0]);
 		await client.CreateCollection(names[1]);
 		var result = await client.ListCollections();
@@ -66,7 +66,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var name = $"collection{Random.Shared.Next()}";
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.CreateCollection(name);
 		Assert.That(result.Success, Is.True);
 		Assert.That(result.Data, Is.Not.Null);
@@ -83,7 +83,7 @@ public class ClientTests : ChromaDBTestsBase
 			{ "test2", 10 },
 		};
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.CreateCollection(name,
 			metadata: metadata);
 		Assert.That(result.Success, Is.True);
@@ -99,7 +99,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var name = $"collection{Random.Shared.Next()}";
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		await client.CreateCollection(name);
 		var result = await client.CreateCollection(name);
 		Assert.That(result.Success, Is.False);
@@ -111,7 +111,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var name = $"collection{Random.Shared.Next()}";
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		await client.CreateCollection(name);
 		var result = await client.DeleteCollection(name);
 		Assert.That(result.Success, Is.True);
@@ -122,7 +122,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var name = $"collection{Random.Shared.Next()}";
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.DeleteCollection(name);
 		Assert.That(result.Success, Is.False);
 		Assert.That(result.ErrorMessage, Is.Not.Null.And.Not.Empty);
@@ -133,7 +133,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var name = $"collection{Random.Shared.Next()}";
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.GetOrCreateCollection(name);
 		Assert.That(result.Success, Is.True);
 		Assert.That(result.Data, Is.Not.Null);
@@ -145,7 +145,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var name = $"collection{Random.Shared.Next()}";
 
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result1 = await client.GetOrCreateCollection(name);
 		var result2 = await client.GetOrCreateCollection(name);
 		Assert.That(result1.Success, Is.True);
@@ -160,7 +160,7 @@ public class ClientTests : ChromaDBTestsBase
 	[Test]
 	public async Task CountCollections()
 	{
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var listResponse = await client.ListCollections();
 		Assert.That(listResponse.Success, Is.True);
 		var result = await client.CountCollections();

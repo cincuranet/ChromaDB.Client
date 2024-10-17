@@ -3,7 +3,7 @@ using System.Net;
 
 namespace ChromaDB.Client.Models;
 
-public sealed class Response<T>
+public sealed class ChromaResponse<T>
 {
 	// expose?
 	public HttpStatusCode StatusCode { get; }
@@ -13,7 +13,7 @@ public sealed class Response<T>
 	[MemberNotNullWhen(true, nameof(Data))]
 	public bool Success => StatusCode < HttpStatusCode.BadRequest && StatusCode >= HttpStatusCode.OK;
 
-	public Response(HttpStatusCode statusCode, T? data = default, string? errorMessage = null)
+	public ChromaResponse(HttpStatusCode statusCode, T? data = default, string? errorMessage = null)
 	{
 		StatusCode = statusCode;
 		Data = data;

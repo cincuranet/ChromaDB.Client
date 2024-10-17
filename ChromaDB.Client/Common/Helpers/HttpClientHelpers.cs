@@ -26,13 +26,13 @@ internal static partial class HttpClientHelpers
 		},
 	};
 
-	public static async Task<Response<TResponse>> Get<TResponse>(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
+	public static async Task<ChromaResponse<TResponse>> Get<TResponse>(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
 	{
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams));
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
 
-	public static async Task<Response<TResponse>> Post<TInput, TResponse>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
+	public static async Task<ChromaResponse<TResponse>> Post<TInput, TResponse>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
 	{
 		using var content = new StringContent(JsonSerializer.Serialize(input, PostJsonSerializerOptions) ?? string.Empty, new MediaTypeHeaderValue("application/json"));
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams))
@@ -43,7 +43,7 @@ internal static partial class HttpClientHelpers
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
 
-	public static async Task<Response<TResponse>> Put<TInput, TResponse>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
+	public static async Task<ChromaResponse<TResponse>> Put<TInput, TResponse>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
 	{
 		using var content = new StringContent(JsonSerializer.Serialize(input, PostJsonSerializerOptions) ?? string.Empty, new MediaTypeHeaderValue("application/json"));
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams))
@@ -54,13 +54,13 @@ internal static partial class HttpClientHelpers
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
 
-	public static async Task<Response<TResponse>> Delete<TResponse>(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
+	public static async Task<ChromaResponse<TResponse>> Delete<TResponse>(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
 	{
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams));
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
 
-	private static async Task<Response<TResponse>> Send<TResponse>(HttpClient httpClient, HttpRequestMessage httpRequestMessage)
+	private static async Task<ChromaResponse<TResponse>> Send<TResponse>(HttpClient httpClient, HttpRequestMessage httpRequestMessage)
 	{
 		try
 		{
@@ -80,22 +80,22 @@ internal static partial class HttpClientHelpers
 		catch (Exception ex)
 		{
 			// Decided on ServiceUnavailable error for all other exception types, we'll pass the exception message forward
-			return new Response<TResponse>(
+			return new ChromaResponse<TResponse>(
 				statusCode: HttpStatusCode.ServiceUnavailable,
 				errorMessage: ex.Message);
 		}
 
-		static Response<TResponse> CreateEmptyResponse(HttpStatusCode statusCode)
+		static ChromaResponse<TResponse> CreateEmptyResponse(HttpStatusCode statusCode)
 			=> new(
 				statusCode: statusCode,
 				data: (TResponse)(object)Response.Empty.Instance);
 
-		static Response<TResponse> CreateDataResponse(HttpStatusCode statusCode, string responseBody)
+		static ChromaResponse<TResponse> CreateDataResponse(HttpStatusCode statusCode, string responseBody)
 			=> new(
 				statusCode: statusCode,
 				data: JsonSerializer.Deserialize<TResponse>(responseBody, DeserializerJsonSerializerOptions));
 
-		static Response<TResponse> CreateErrorResponse(HttpStatusCode statusCode, string? errorMessageBody)
+		static ChromaResponse<TResponse> CreateErrorResponse(HttpStatusCode statusCode, string? errorMessageBody)
 			=> new(
 				statusCode: statusCode,
 				errorMessage: errorMessageBody is not null and not []

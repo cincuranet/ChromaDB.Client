@@ -1,6 +1,6 @@
 ﻿namespace ChromaDB.Client.Models;
 
-public class CollectionEntry
+public class ChromaCollectionEntry
 {
 	public string Id { get; }
 	public List<float>? Embeddings { get; init; }
@@ -9,7 +9,7 @@ public class CollectionEntry
 	public List<string?>? Uris { get; init; }
 	public dynamic? Data { get; init; }
 
-	public CollectionEntry(string id)
+	public ChromaCollectionEntry(string id)
 	{
 		Id = id;
 	}

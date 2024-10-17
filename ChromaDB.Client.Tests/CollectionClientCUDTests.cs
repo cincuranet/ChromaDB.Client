@@ -266,13 +266,13 @@ public class CollectionClientCUDTests : ChromaDBTestsBase
 		Assert.That(result.Success, Is.True);
 	}
 
-	async Task<ChromaDBCollectionClient> Init()
+	async Task<ChromaCollectionClient> Init()
 	{
 		var name = $"collection{Random.Shared.Next()}";
-		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
+		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var collectionResponse = await client.GetOrCreateCollection(name);
 		Assert.That(collectionResponse.Success, Is.True);
 		var collection = collectionResponse.Data!;
-		return new ChromaDBCollectionClient(collection, ConfigurationOptions, HttpClient);
+		return new ChromaCollectionClient(collection, ConfigurationOptions, HttpClient);
 	}
 }
