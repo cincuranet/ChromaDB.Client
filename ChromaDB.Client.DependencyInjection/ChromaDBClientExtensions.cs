@@ -1,9 +1,8 @@
 ﻿using ChromaDB.Client.Common.Constants;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ChromaDB.Client.Extensions;
+namespace ChromaDB.Client.DependencyInjection;
 
-// DependencyInjection
 public static class ChromaDBClientExtensions
 {
 	public static void AddChromaDBClient(this IServiceCollection services, Func<ConfigurationOptions?, ConfigurationOptions>? configurationOptions = null)
