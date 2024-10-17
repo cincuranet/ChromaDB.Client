@@ -7,11 +7,11 @@ namespace ChromaDB.Client;
 
 public class ChromaDBClient
 {
-	private readonly ChromaDBHttpClient _httpClient;
+	private readonly HttpClient _httpClient;
 	private readonly Tenant _currentTenant;
 	private readonly Database _currentDatabase;
 
-	public ChromaDBClient(ConfigurationOptions options, ChromaDBHttpClient httpClient)
+	public ChromaDBClient(ConfigurationOptions options, HttpClient httpClient)
 	{
 		_httpClient = httpClient;
 		_currentTenant = options.Tenant is not null and not []
@@ -20,6 +20,8 @@ public class ChromaDBClient
 		_currentDatabase = options.Database is not null and not []
 			? new Database(options.Database)
 			: ClientConstants.DefaultDatabase;
+
+		_httpClient.BaseAddress = options.Uri;
 	}
 
 	public async Task<Response<List<Collection>>> ListCollections(string? tenant = null, string? database = null)

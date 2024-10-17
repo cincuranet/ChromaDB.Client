@@ -11,8 +11,7 @@ public class ClientResetTests
 		[Test]
 		public async Task ResetSimple()
 		{
-			using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-			var client = new ChromaDBClient(ConfigurationOptions, httpClient);
+			var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
 			var result = await client.Reset();
 			Assert.That(result.Success, Is.False);
 			Assert.That(result.ErrorMessage, Contains.Substring("ALLOW_RESET"));
@@ -25,8 +24,7 @@ public class ClientResetTests
 		[Test]
 		public async Task ResetSimple()
 		{
-			using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-			var client = new ChromaDBClient(ConfigurationOptions, httpClient);
+			var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
 			var result = await client.Reset();
 			Assert.That(result.Success, Is.True);
 			Assert.That(result.Data, Is.True);

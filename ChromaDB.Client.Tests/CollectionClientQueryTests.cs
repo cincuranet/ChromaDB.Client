@@ -8,8 +8,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	[Test]
 	public async Task SimpleQuerySingle()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Query([Embeddings1],
 			include: ["distances", "embeddings"]);
 		Assert.That(result.Success, Is.True);
@@ -27,8 +26,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	[Test]
 	public async Task SimpleQuerySingleIncludeAll()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Query([Embeddings1],
 			include: ["distances", "embeddings", "metadatas", "documents"]);
 		Assert.That(result.Success, Is.True);
@@ -46,8 +44,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	[Test]
 	public async Task SimpleQueryMultiple()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Query([Embeddings1, Embeddings2],
 			include: ["distances", "embeddings"]);
 		Assert.That(result.Success, Is.True);
@@ -73,8 +70,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	[Test]
 	public async Task SimpleQueryMultipleIncludeAll()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Query([Embeddings1, Embeddings2],
 			include: ["distances", "embeddings", "metadatas", "documents"]);
 		Assert.That(result.Success, Is.True);
@@ -100,8 +96,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	[Test]
 	public async Task QuerySingleNResults1()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Query([Embeddings1],
 			include: ["distances", "embeddings"],
 			nResults: 1);
@@ -117,8 +112,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	[Test]
 	public async Task QueryWithWhere()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Query([Embeddings1, Embeddings2],
 			where: new Dictionary<string, object> { { MetadataKey2, new Dictionary<string, object> { { "$lt", Metadata2[MetadataKey2] } } } },
 			include: ["distances"]);
@@ -141,8 +135,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	[Test]
 	public async Task QueryWithWhereDocument()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Query([Embeddings1, Embeddings2],
 			whereDocument: new Dictionary<string, object> { { "$not_contains", Doc2[^1] } },
 			include: ["distances"]);
@@ -181,14 +174,14 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	static readonly string Doc1 = "Doc1";
 	static readonly string Doc2 = "Doc2";
 
-	async Task<ChromaDBCollectionClient> Init(ChromaDBHttpClient httpClient)
+	async Task<ChromaDBCollectionClient> Init()
 	{
 		var name = $"collection{Random.Shared.Next()}";
-		var client = new ChromaDBClient(ConfigurationOptions, httpClient);
+		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
 		var collectionResponse = await client.CreateCollection(name);
 		Assert.That(collectionResponse.Success, Is.True);
 		var collection = collectionResponse.Data!;
-		var collectionClient = new ChromaDBCollectionClient(collection, httpClient);
+		var collectionClient = new ChromaDBCollectionClient(collection, ConfigurationOptions, HttpClient);
 		var addResponse = await collectionClient.Add([Id1, Id2],
 			embeddings: [Embeddings1, Embeddings2],
 			metadatas: [Metadata1, Metadata2],

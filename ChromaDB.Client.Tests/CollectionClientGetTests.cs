@@ -8,8 +8,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetSingleIdIncludeNothing()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1],
 			include: []);
@@ -24,8 +23,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetSingleIdIncludeEmbeddings()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1],
 			include: ["embeddings"]);
@@ -40,8 +38,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetSingleIdIncludeMetadatas()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1],
 			include: ["metadatas"]);
@@ -56,8 +53,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetSingleIdIncludeDocuments()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1],
 			include: ["documents"]);
@@ -72,8 +68,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetSingleIdIncludeAll()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1],
 			include: ["embeddings", "metadatas", "documents"]);
@@ -88,8 +83,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetMultipleIdsIncludeNothing()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1, Id2],
 			include: []);
@@ -108,8 +102,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetMultipleIdsIncludeEmbeddings()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1, Id2],
 			include: ["embeddings"]);
@@ -128,8 +121,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetMultipleIdsIncludeMetadatas()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1, Id2],
 			include: ["metadatas"]);
@@ -148,8 +140,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetMultipleIdsIncludeDocuments()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1, Id2],
 			include: ["documents"]);
@@ -168,8 +159,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetMultipleIdsIncludeAll()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1, Id2],
 			include: ["embeddings", "metadatas", "documents"]);
@@ -188,8 +178,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetLimitIncludeAll()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1, Id2],
 			include: ["embeddings", "metadatas", "documents"],
@@ -205,8 +194,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetLimitOffsetIncludeAll()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			ids: [Id1, Id2],
 			include: ["embeddings", "metadatas", "documents"],
@@ -223,8 +211,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetWhereIncludeAll()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			where: new Dictionary<string, object> { { MetadataKey2, Metadata2[MetadataKey2] } },
 			include: ["embeddings", "metadatas", "documents"]);
@@ -239,8 +226,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetWhereOperatorIncludeAll()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			where: new Dictionary<string, object> { { MetadataKey2, new Dictionary<string, object> { { "$lt", Metadata2[MetadataKey2] } } } },
 			include: ["embeddings", "metadatas", "documents"]);
@@ -255,8 +241,7 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	[Test]
 	public async Task GetWhereDocumentIncludeDocuments()
 	{
-		using var httpClient = new ChromaDBHttpClient(ConfigurationOptions);
-		var client = await Init(httpClient);
+		var client = await Init();
 		var result = await client.Get(
 			whereDocument: new Dictionary<string, object> { { "$not_contains", Doc2[^1] } },
 			include: ["documents"]);
@@ -287,14 +272,14 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 	static readonly string Doc1 = "Doc1";
 	static readonly string Doc2 = "Doc2";
 
-	async Task<ChromaDBCollectionClient> Init(ChromaDBHttpClient httpClient)
+	async Task<ChromaDBCollectionClient> Init()
 	{
 		var name = $"collection{Random.Shared.Next()}";
-		var client = new ChromaDBClient(ConfigurationOptions, httpClient);
+		var client = new ChromaDBClient(ConfigurationOptions, HttpClient);
 		var collectionResponse = await client.CreateCollection(name);
 		Assert.That(collectionResponse.Success, Is.True);
 		var collection = collectionResponse.Data!;
-		var collectionClient = new ChromaDBCollectionClient(collection, httpClient);
+		var collectionClient = new ChromaDBCollectionClient(collection, ConfigurationOptions, HttpClient);
 		var addResponse = await collectionClient.Add([Id1, Id2],
 			embeddings: [Embeddings1, Embeddings2],
 			metadatas: [Metadata1, Metadata2],

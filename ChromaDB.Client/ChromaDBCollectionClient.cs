@@ -9,12 +9,14 @@ namespace ChromaDB.Client;
 public class ChromaDBCollectionClient
 {
 	private readonly Collection _collection;
-	private readonly ChromaDBHttpClient _httpClient;
+	private readonly HttpClient _httpClient;
 
-	public ChromaDBCollectionClient(Collection collection, ChromaDBHttpClient httpClient)
+	public ChromaDBCollectionClient(Collection collection, ConfigurationOptions options, HttpClient httpClient)
 	{
 		_collection = collection;
 		_httpClient = httpClient;
+
+		_httpClient.BaseAddress = options.Uri;
 	}
 
 	public Collection Collection => _collection;

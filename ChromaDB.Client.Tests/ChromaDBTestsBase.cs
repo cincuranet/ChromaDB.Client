@@ -5,6 +5,8 @@ namespace ChromaDB.Client.Tests;
 
 public abstract class ChromaDBTestsBase
 {
+	protected static readonly HttpClient HttpClient = new();
+
 	private ChromaDBContainer _container;
 	private ConfigurationOptions? _configurationOptions;
 

@@ -6,7 +6,7 @@ using ChromaDB.Client;
 
 // include: Enum
 var configOptions = new ConfigurationOptions(uri: "http://localhost:8000/api/v1/");
-using var httpClient = new ChromaDBHttpClient(configOptions);
+using var httpClient = new HttpClient();
 // accept options as arguments
 var client = new ChromaDBClient(configOptions, httpClient);
 
@@ -15,7 +15,7 @@ Console.WriteLine((await client.GetVersion()).Data);
 var getOrCreateResponse = await client.GetOrCreateCollection("string5");
 Trace.Assert(getOrCreateResponse.Success);
 
-var string5Client = new ChromaDBCollectionClient(getOrCreateResponse.Data, httpClient);
+var string5Client = new ChromaDBCollectionClient(getOrCreateResponse.Data, configOptions, httpClient);
 
 var addResponse = await string5Client.Add(["340a36ad-c38a-406c-be38-250174aee5a4"], embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]]);
 Trace.Assert(addResponse.Success);
