@@ -5,13 +5,13 @@ using ChromaDB.Client.Models.Requests;
 
 namespace ChromaDB.Client;
 
-public class ChromaDBClient : IChromaDBClient
+public class ChromaDBClient
 {
-	private readonly IChromaDBHttpClient _httpClient;
+	private readonly ChromaDBHttpClient _httpClient;
 	private readonly Tenant _currentTenant;
 	private readonly Database _currentDatabase;
 
-	public ChromaDBClient(ConfigurationOptions options, IChromaDBHttpClient httpClient)
+	public ChromaDBClient(ConfigurationOptions options, ChromaDBHttpClient httpClient)
 	{
 		_httpClient = httpClient;
 		_currentTenant = options.Tenant is not null and not []

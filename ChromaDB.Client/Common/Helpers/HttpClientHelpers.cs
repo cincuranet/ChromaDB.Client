@@ -26,13 +26,13 @@ internal static partial class HttpClientHelpers
 		},
 	};
 
-	public static async Task<Response<TResponse>> Get<TResponse>(this IChromaDBHttpClient httpClient, string endpoint, RequestQueryParams queryParams)
+	public static async Task<Response<TResponse>> Get<TResponse>(this ChromaDBHttpClient httpClient, string endpoint, RequestQueryParams queryParams)
 	{
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams));
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
 
-	public static async Task<Response<TResponse>> Post<TInput, TResponse>(this IChromaDBHttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
+	public static async Task<Response<TResponse>> Post<TInput, TResponse>(this ChromaDBHttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
 	{
 		using var content = new StringContent(JsonSerializer.Serialize(input, PostJsonSerializerOptions) ?? string.Empty, new MediaTypeHeaderValue("application/json"));
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams))
@@ -43,7 +43,7 @@ internal static partial class HttpClientHelpers
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
 
-	public static async Task<Response<TResponse>> Put<TInput, TResponse>(this IChromaDBHttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
+	public static async Task<Response<TResponse>> Put<TInput, TResponse>(this ChromaDBHttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
 	{
 		using var content = new StringContent(JsonSerializer.Serialize(input, PostJsonSerializerOptions) ?? string.Empty, new MediaTypeHeaderValue("application/json"));
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams))
@@ -54,13 +54,13 @@ internal static partial class HttpClientHelpers
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
 
-	public static async Task<Response<TResponse>> Delete<TResponse>(this IChromaDBHttpClient httpClient, string endpoint, RequestQueryParams queryParams)
+	public static async Task<Response<TResponse>> Delete<TResponse>(this ChromaDBHttpClient httpClient, string endpoint, RequestQueryParams queryParams)
 	{
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams));
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
 
-	private static async Task<Response<TResponse>> Send<TResponse>(IChromaDBHttpClient httpClient, HttpRequestMessage httpRequestMessage)
+	private static async Task<Response<TResponse>> Send<TResponse>(ChromaDBHttpClient httpClient, HttpRequestMessage httpRequestMessage)
 	{
 		try
 		{

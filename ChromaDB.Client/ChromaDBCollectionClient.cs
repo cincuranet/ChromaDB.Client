@@ -6,12 +6,12 @@ using ChromaDB.Client.Models.Responses;
 
 namespace ChromaDB.Client;
 
-public class ChromaDBCollectionClient : IChromaDBCollectionClient
+public class ChromaDBCollectionClient
 {
 	private readonly Collection _collection;
-	private readonly IChromaDBHttpClient _httpClient;
+	private readonly ChromaDBHttpClient _httpClient;
 
-	public ChromaDBCollectionClient(Collection collection, IChromaDBHttpClient httpClient)
+	public ChromaDBCollectionClient(Collection collection, ChromaDBHttpClient httpClient)
 	{
 		_collection = collection;
 		_httpClient = httpClient;

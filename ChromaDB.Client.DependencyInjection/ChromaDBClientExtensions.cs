@@ -12,8 +12,8 @@ public static class ChromaDBClientExtensions
 		ConfigurationOptions options = new();
 		options = configurationOptions(options);
 
-		services.AddScoped<IChromaDBClient, ChromaDBClient>();
-		services.AddHttpClient<IChromaDBClient, ChromaDBClient>(o =>
+		services.AddScoped<ChromaDBClient>();
+		services.AddHttpClient<ChromaDBClient>(o =>
 		{
 			o.BaseAddress = options.Uri;
 		});

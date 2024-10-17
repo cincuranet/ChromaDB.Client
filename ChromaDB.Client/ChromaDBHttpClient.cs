@@ -1,7 +1,7 @@
 ﻿namespace ChromaDB.Client;
 
 // kill this -Shay (2024)
-public class ChromaDBHttpClient : HttpClient, IChromaDBHttpClient
+public class ChromaDBHttpClient : HttpClient
 {
 	private readonly ConfigurationOptions _config;
 
