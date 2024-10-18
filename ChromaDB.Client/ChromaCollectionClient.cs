@@ -21,7 +21,7 @@ public class ChromaCollectionClient
 
 	public ChromaCollection Collection => _collection;
 
-	public async Task<ChromaResponse<List<ChromaCollectionEntry>>> Get(List<string>? ids = null, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, int? limit = null, int? offset = null, List<string>? include = null)
+	public async Task<List<ChromaCollectionEntry>> Get(List<string>? ids = null, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, int? limit = null, int? offset = null, List<string>? include = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -35,11 +35,10 @@ public class ChromaCollectionClient
 			Include = include ?? ["metadatas", "documents"],
 		};
 		var response = await _httpClient.Post<CollectionGetRequest, CollectionEntriesGetResponse>("collections/{collection_id}/get", request, requestParams);
-		var entries = response.Data?.Map() ?? [];
-		return new ChromaResponse<List<ChromaCollectionEntry>>(response.StatusCode, entries, response.ErrorMessage);
+		return response.Map() ?? [];
 	}
 
-	public async Task<ChromaResponse<List<List<CollectionQueryEntry>>>> Query(List<List<float>> queryEmbeddings, int nResults = 10, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, List<string>? include = null)
+	public async Task<List<List<CollectionQueryEntry>>> Query(List<List<float>> queryEmbeddings, int nResults = 10, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, List<string>? include = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -52,11 +51,10 @@ public class ChromaCollectionClient
 			Include = include ?? ["metadatas", "documents", "distances"],
 		};
 		var response = await _httpClient.Post<CollectionQueryRequest, CollectionEntriesQueryResponse>("collections/{collection_id}/query", request, requestParams);
-		var entries = response.Data?.Map() ?? [];
-		return new ChromaResponse<List<List<CollectionQueryEntry>>>(response.StatusCode, entries, response.ErrorMessage);
+		return response.Map() ?? [];
 	}
 
-	public async Task<ChromaResponse<Response.Empty>> Add(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
+	public async Task Add(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -67,10 +65,10 @@ public class ChromaCollectionClient
 			Metadatas = metadatas,
 			Documents = documents,
 		};
-		return await _httpClient.Post<CollectionAddRequest, Response.Empty>("collections/{collection_id}/add", request, requestParams);
+		await _httpClient.Post("collections/{collection_id}/add", request, requestParams);
 	}
 
-	public async Task<ChromaResponse<Response.Empty>> Update(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
+	public async Task Update(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -81,10 +79,10 @@ public class ChromaCollectionClient
 			Metadatas = metadatas,
 			Documents = documents,
 		};
-		return await _httpClient.Post<CollectionUpdateRequest, Response.Empty>("collections/{collection_id}/update", request, requestParams);
+		await _httpClient.Post("collections/{collection_id}/update", request, requestParams);
 	}
 
-	public async Task<ChromaResponse<Response.Empty>> Upsert(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
+	public async Task Upsert(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -95,10 +93,10 @@ public class ChromaCollectionClient
 			Metadatas = metadatas,
 			Documents = documents,
 		};
-		return await _httpClient.Post<CollectionUpsertRequest, Response.Empty>("collections/{collection_id}/upsert", request, requestParams);
+		await _httpClient.Post("collections/{collection_id}/upsert", request, requestParams);
 	}
 
-	public async Task<ChromaResponse<Response.Empty>> Delete(List<string> ids, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null)
+	public async Task Delete(List<string> ids, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -108,17 +106,17 @@ public class ChromaCollectionClient
 			Where = where,
 			WhereDocument = whereDocument,
 		};
-		return await _httpClient.Post<CollectionDeleteRequest, Response.Empty>("collections/{collection_id}/delete", request, requestParams);
+		await _httpClient.Post("collections/{collection_id}/delete", request, requestParams);
 	}
 
-	public async Task<ChromaResponse<int>> Count()
+	public async Task<int> Count()
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
 		return await _httpClient.Get<int>("collections/{collection_id}/count", requestParams);
 	}
 
-	public async Task<ChromaResponse<List<ChromaCollectionEntry>>> Peek(int limit = 10)
+	public async Task<List<ChromaCollectionEntry>> Peek(int limit = 10)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -127,11 +125,10 @@ public class ChromaCollectionClient
 			Limit = limit,
 		};
 		var response = await _httpClient.Post<CollectionPeekRequest, CollectionEntriesGetResponse>("collections/{collection_id}/get", request, requestParams);
-		var entries = response.Data?.Map() ?? [];
-		return new ChromaResponse<List<ChromaCollectionEntry>>(response.StatusCode, entries, response.ErrorMessage);
+		return response.Map() ?? [];
 	}
 
-	public async Task<ChromaResponse<Response.Empty>> Modify(string? name = null, Dictionary<string, object>? metadata = null)
+	public async Task Modify(string? name = null, Dictionary<string, object>? metadata = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -140,6 +137,6 @@ public class ChromaCollectionClient
 			Name = name,
 			Metadata = metadata,
 		};
-		return await _httpClient.Put<CollectionModifyRequest, Response.Empty>("collections/{collection_id}", request, requestParams);
+		await _httpClient.Put("collections/{collection_id}", request, requestParams);
 	}
 }

@@ -10,8 +10,7 @@ public class CollectionClientTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		var result = await client.Count();
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.EqualTo(0));
+		Assert.That(result, Is.EqualTo(0));
 	}
 
 	[Test]
@@ -20,8 +19,7 @@ public class CollectionClientTests : ChromaDBTestsBase
 		var client = await Init();
 		await client.Add([$"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}"]);
 		var result = await client.Count();
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.EqualTo(6));
+		Assert.That(result, Is.EqualTo(6));
 	}
 
 	[Test]
@@ -30,8 +28,7 @@ public class CollectionClientTests : ChromaDBTestsBase
 		var client = await Init();
 		await client.Add([$"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}"]);
 		var result = await client.Peek();
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.Not.Empty);
+		Assert.That(result, Is.Not.Empty);
 	}
 
 	[Test]
@@ -41,17 +38,15 @@ public class CollectionClientTests : ChromaDBTestsBase
 		await client.Add([$"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}", $"{Guid.NewGuid()}"]);
 		var result = await client.Peek(
 			limit: 2);
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Has.Count.EqualTo(2));
+		Assert.That(result, Has.Count.EqualTo(2));
 	}
 
 	[Test]
 	public async Task ModifyCollectionName()
 	{
 		var client = await Init();
-		var result = await client.Modify(
+		await client.Modify(
 			name: $"{client.Collection.Name}_modified");
-		Assert.That(result.Success, Is.True);
 	}
 
 	[Test]
@@ -64,9 +59,8 @@ public class CollectionClientTests : ChromaDBTestsBase
 		};
 
 		var client = await Init();
-		var result = await client.Modify(
+		await client.Modify(
 			metadata: metadata);
-		Assert.That(result.Success, Is.True);
 	}
 
 	[Test]
@@ -79,19 +73,16 @@ public class CollectionClientTests : ChromaDBTestsBase
 		};
 
 		var client = await Init();
-		var result = await client.Modify(
+		await client.Modify(
 			name: $"{client.Collection.Name}_modified",
 			metadata: metadata);
-		Assert.That(result.Success, Is.True);
 	}
 
 	async Task<ChromaCollectionClient> Init()
 	{
 		var name = $"collection{Random.Shared.Next()}";
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
-		var collectionResponse = await client.CreateCollection(name);
-		Assert.That(collectionResponse.Success, Is.True);
-		var collection = collectionResponse.Data!;
+		var collection = await client.CreateCollection(name);
 		return new ChromaCollectionClient(collection, ConfigurationOptions, HttpClient);
 	}
 }

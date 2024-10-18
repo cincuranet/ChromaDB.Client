@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using ChromaDB.Client.Models;
 using ChromaDB.Client.Models.Requests;
 using ChromaDB.Client.Models.Responses;
 
@@ -26,13 +25,18 @@ internal static partial class HttpClientHelpers
 		},
 	};
 
-	public static async Task<ChromaResponse<TResponse>> Get<TResponse>(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
+	public static async Task<TResponse> Get<TResponse>(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
 	{
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams));
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
+	public static async Task Get(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
+	{
+		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams));
+		await Send(httpClient, httpRequestMessage);
+	}
 
-	public static async Task<ChromaResponse<TResponse>> Post<TInput, TResponse>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
+	public static async Task<TResponse> Post<TInput, TResponse>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
 	{
 		using var content = new StringContent(JsonSerializer.Serialize(input, PostJsonSerializerOptions) ?? string.Empty, new MediaTypeHeaderValue("application/json"));
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams))
@@ -42,8 +46,18 @@ internal static partial class HttpClientHelpers
 		};
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
+	public static async Task Post<TInput>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
+	{
+		using var content = new StringContent(JsonSerializer.Serialize(input, PostJsonSerializerOptions) ?? string.Empty, new MediaTypeHeaderValue("application/json"));
+		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams))
+		{
+			Content = content,
+			Headers = { Accept = { new MediaTypeWithQualityHeaderValue("application/json") } }
+		};
+		await Send(httpClient, httpRequestMessage);
+	}
 
-	public static async Task<ChromaResponse<TResponse>> Put<TInput, TResponse>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
+	public static async Task<TResponse> Put<TInput, TResponse>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
 	{
 		using var content = new StringContent(JsonSerializer.Serialize(input, PostJsonSerializerOptions) ?? string.Empty, new MediaTypeHeaderValue("application/json"));
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams))
@@ -53,58 +67,82 @@ internal static partial class HttpClientHelpers
 		};
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
+	public static async Task Put<TInput>(this HttpClient httpClient, string endpoint, TInput? input, RequestQueryParams queryParams)
+	{
+		using var content = new StringContent(JsonSerializer.Serialize(input, PostJsonSerializerOptions) ?? string.Empty, new MediaTypeHeaderValue("application/json"));
+		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams))
+		{
+			Content = content,
+			Headers = { Accept = { new MediaTypeWithQualityHeaderValue("application/json") } }
+		};
+		await Send(httpClient, httpRequestMessage);
+	}
 
-	public static async Task<ChromaResponse<TResponse>> Delete<TResponse>(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
+	public static async Task<TResponse> Delete<TResponse>(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
 	{
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams));
 		return await Send<TResponse>(httpClient, httpRequestMessage);
 	}
+	public static async Task Delete(this HttpClient httpClient, string endpoint, RequestQueryParams queryParams)
+	{
+		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, requestUri: ValidateAndPrepareEndpoint(endpoint, queryParams));
+		await Send(httpClient, httpRequestMessage);
+	}
 
-	private static async Task<ChromaResponse<TResponse>> Send<TResponse>(HttpClient httpClient, HttpRequestMessage httpRequestMessage)
+	private static async Task<TResponse> Send<TResponse>(HttpClient httpClient, HttpRequestMessage httpRequestMessage)
 	{
 		try
 		{
 			using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-
-			return httpResponseMessage.IsSuccessStatusCode switch
+			return (int)httpResponseMessage.StatusCode switch
 			{
-				true when typeof(TResponse) == typeof(Response.Empty) => CreateEmptyResponse(httpResponseMessage.StatusCode),
-				true => CreateDataResponse(httpResponseMessage.StatusCode, await httpResponseMessage.Content.ReadAsStringAsync()),
-				false when httpResponseMessage.StatusCode == HttpStatusCode.BadRequest
-					|| httpResponseMessage.StatusCode == HttpStatusCode.UnprocessableContent
-					|| httpResponseMessage.StatusCode == HttpStatusCode.InternalServerError
-					=> CreateErrorResponse(httpResponseMessage.StatusCode, await httpResponseMessage.Content.ReadAsStringAsync()),
-				_ => CreateErrorResponse(httpResponseMessage.StatusCode, null),
+				>= 200 and <= 299 => JsonSerializer.Deserialize<TResponse>(await httpResponseMessage.Content.ReadAsStringAsync(), DeserializerJsonSerializerOptions)!,
+				_ => throw await HandleErrorStatusCode(httpResponseMessage),
 			};
 		}
-		catch (Exception ex)
+		catch (Exception ex) when (ex is not ChromaException)
 		{
-			// Decided on ServiceUnavailable error for all other exception types, we'll pass the exception message forward
-			return new ChromaResponse<TResponse>(
-				statusCode: HttpStatusCode.ServiceUnavailable,
-				errorMessage: ex.Message);
+			throw new ChromaException(ex.Message, ex);
 		}
-
-		static ChromaResponse<TResponse> CreateEmptyResponse(HttpStatusCode statusCode)
-			=> new(
-				statusCode: statusCode,
-				data: (TResponse)(object)Response.Empty.Instance);
-
-		static ChromaResponse<TResponse> CreateDataResponse(HttpStatusCode statusCode, string responseBody)
-			=> new(
-				statusCode: statusCode,
-				data: JsonSerializer.Deserialize<TResponse>(responseBody, DeserializerJsonSerializerOptions));
-
-		static ChromaResponse<TResponse> CreateErrorResponse(HttpStatusCode statusCode, string? errorMessageBody)
-			=> new(
-				statusCode: statusCode,
-				errorMessage: errorMessageBody is not null and not []
-					? ParseErrorMessageBody(errorMessageBody)
-					: default);
+	}
+	private static async Task Send(HttpClient httpClient, HttpRequestMessage httpRequestMessage)
+	{
+		try
+		{
+			using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+			switch ((int)httpResponseMessage.StatusCode)
+			{
+				case >= 200 and <= 299:
+					return;
+				default:
+					throw await HandleErrorStatusCode(httpResponseMessage);
+			};
+		}
+		catch (Exception ex) when (ex is not ChromaException)
+		{
+			throw new ChromaException(ex.Message, ex);
+		}
 	}
 
-	private static string? ParseErrorMessageBody(string errorMessageBody)
+	private static async Task<ChromaException> HandleErrorStatusCode(HttpResponseMessage httpResponseMessage)
 	{
+		return httpResponseMessage.StatusCode switch
+		{
+			HttpStatusCode.BadRequest
+				or HttpStatusCode.UnprocessableContent
+				or HttpStatusCode.InternalServerError
+				=> new ChromaException(ParseErrorMessageBody(await httpResponseMessage.Content.ReadAsStringAsync())),
+			_ => new ChromaException($"Unexpected status code: {httpResponseMessage.StatusCode}."),
+		};
+	}
+
+	private static string? ParseErrorMessageBody(string? errorMessageBody)
+	{
+		if (errorMessageBody is null or [])
+		{
+			return null;
+		}
+
 		try
 		{
 			var deserialized = JsonSerializer.Deserialize<GeneralError>(errorMessageBody, DeserializerJsonSerializerOptions)!;

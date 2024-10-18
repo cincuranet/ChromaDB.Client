@@ -17,9 +17,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.Heartbeat();
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.Not.Null);
-		Assert.That(result.Data.NanosecondHeartbeat, Is.GreaterThan(0));
+		Assert.That(result.NanosecondHeartbeat, Is.GreaterThan(0));
 	}
 
 	[Test]
@@ -27,9 +25,7 @@ public class ClientTests : ChromaDBTestsBase
 	{
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.GetVersion();
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.Not.Null.And.Not.Empty);
-		Assert.That(result.Data, Does.Match(@"\d+\.\d+"));
+		Assert.That(result, Does.Match(@"\d+\.\d+"));
 	}
 
 	[Test]
@@ -40,9 +36,8 @@ public class ClientTests : ChromaDBTestsBase
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		await client.CreateCollection(name);
 		var result = await client.GetCollection(name);
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.Not.Null);
-		Assert.That(result.Data.Name, Is.EqualTo(name));
+		Assert.That(result, Is.Not.Null);
+		Assert.That(result.Name, Is.EqualTo(name));
 	}
 
 	[Test]
@@ -54,11 +49,10 @@ public class ClientTests : ChromaDBTestsBase
 		await client.CreateCollection(names[0]);
 		await client.CreateCollection(names[1]);
 		var result = await client.ListCollections();
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.Not.Null);
-		Assert.That(result.Data, Has.Count.GreaterThanOrEqualTo(2));
-		Assert.That(result.Data.Select(x => x.Name), Contains.Item(names[0]));
-		Assert.That(result.Data.Select(x => x.Name), Contains.Item(names[1]));
+		Assert.That(result, Is.Not.Null);
+		Assert.That(result, Has.Count.GreaterThanOrEqualTo(2));
+		Assert.That(result.Select(x => x.Name), Contains.Item(names[0]));
+		Assert.That(result.Select(x => x.Name), Contains.Item(names[1]));
 	}
 
 	[Test]
@@ -68,9 +62,8 @@ public class ClientTests : ChromaDBTestsBase
 
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.CreateCollection(name);
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.Not.Null);
-		Assert.That(result.Data.Name, Is.EqualTo(name));
+		Assert.That(result, Is.Not.Null);
+		Assert.That(result.Name, Is.EqualTo(name));
 	}
 
 	[Test]
@@ -86,12 +79,11 @@ public class ClientTests : ChromaDBTestsBase
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.CreateCollection(name,
 			metadata: metadata);
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.Not.Null);
-		Assert.That(result.Data.Name, Is.EqualTo(name));
-		Assert.That(result.Data.Metadata, Is.Not.Null);
-		Assert.That(result.Data.Metadata["test"], Is.EqualTo(metadata["test"]));
-		Assert.That(result.Data.Metadata["test2"], Is.EqualTo(metadata["test2"]));
+		Assert.That(result, Is.Not.Null);
+		Assert.That(result.Name, Is.EqualTo(name));
+		Assert.That(result.Metadata, Is.Not.Null);
+		Assert.That(result.Metadata["test"], Is.EqualTo(metadata["test"]));
+		Assert.That(result.Metadata["test2"], Is.EqualTo(metadata["test2"]));
 	}
 
 	[Test]
@@ -101,9 +93,7 @@ public class ClientTests : ChromaDBTestsBase
 
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		await client.CreateCollection(name);
-		var result = await client.CreateCollection(name);
-		Assert.That(result.Success, Is.False);
-		Assert.That(result.ErrorMessage, Is.Not.Null.And.Not.Empty);
+		await Assert.ThatAsync(async () => await client.CreateCollection(name), Throws.InstanceOf<ChromaException>().With.Message.Not.Null.And.Not.Empty);
 	}
 
 	[Test]
@@ -113,8 +103,7 @@ public class ClientTests : ChromaDBTestsBase
 
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		await client.CreateCollection(name);
-		var result = await client.DeleteCollection(name);
-		Assert.That(result.Success, Is.True);
+		await client.DeleteCollection(name);
 	}
 
 	[Test]
@@ -123,9 +112,7 @@ public class ClientTests : ChromaDBTestsBase
 		var name = $"collection{Random.Shared.Next()}";
 
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
-		var result = await client.DeleteCollection(name);
-		Assert.That(result.Success, Is.False);
-		Assert.That(result.ErrorMessage, Is.Not.Null.And.Not.Empty);
+		await Assert.ThatAsync(async () => await client.DeleteCollection(name), Throws.InstanceOf<ChromaException>().With.Message.Not.Null.And.Not.Empty);
 	}
 
 	[Test]
@@ -135,9 +122,8 @@ public class ClientTests : ChromaDBTestsBase
 
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result = await client.GetOrCreateCollection(name);
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.Not.Null);
-		Assert.That(result.Data.Name, Is.EqualTo(name));
+		Assert.That(result, Is.Not.Null);
+		Assert.That(result.Name, Is.EqualTo(name));
 	}
 
 	[Test]
@@ -148,23 +134,19 @@ public class ClientTests : ChromaDBTestsBase
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
 		var result1 = await client.GetOrCreateCollection(name);
 		var result2 = await client.GetOrCreateCollection(name);
-		Assert.That(result1.Success, Is.True);
-		Assert.That(result1.Data, Is.Not.Null);
-		Assert.That(result1.Data.Name, Is.EqualTo(name));
-		Assert.That(result2.Success, Is.True);
-		Assert.That(result2.Data, Is.Not.Null);
-		Assert.That(result2.Data.Name, Is.EqualTo(name));
-		Assert.That(result1.Data.Id, Is.EqualTo(result2.Data.Id));
+		Assert.That(result1, Is.Not.Null);
+		Assert.That(result1.Name, Is.EqualTo(name));
+		Assert.That(result2, Is.Not.Null);
+		Assert.That(result2.Name, Is.EqualTo(name));
+		Assert.That(result1.Id, Is.EqualTo(result2.Id));
 	}
 
 	[Test]
 	public async Task CountCollections()
 	{
 		var client = new ChromaClient(ConfigurationOptions, HttpClient);
-		var listResponse = await client.ListCollections();
-		Assert.That(listResponse.Success, Is.True);
+		var list = await client.ListCollections();
 		var result = await client.CountCollections();
-		Assert.That(result.Success, Is.True);
-		Assert.That(result.Data, Is.EqualTo(listResponse.Data!.Count));
+		Assert.That(result, Is.EqualTo(list.Count));
 	}
 }

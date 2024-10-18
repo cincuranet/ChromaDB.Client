@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using ChromaDB.Client;
+﻿using ChromaDB.Client;
 
 // Versioning (J)
 // Query lang (Sam)
@@ -10,34 +9,24 @@ using var httpClient = new HttpClient();
 // accept options as arguments
 var client = new ChromaClient(configOptions, httpClient);
 
-Console.WriteLine((await client.GetVersion()).Data);
+Console.WriteLine(await client.GetVersion());
 
-var getOrCreateResponse = await client.GetOrCreateCollection("string5");
-Trace.Assert(getOrCreateResponse.Success);
+var string5Collection = await client.GetOrCreateCollection("string5");
+var string5Client = new ChromaCollectionClient(string5Collection, configOptions, httpClient);
 
-var string5Client = new ChromaCollectionClient(getOrCreateResponse.Data, configOptions, httpClient);
+await string5Client.Add(["340a36ad-c38a-406c-be38-250174aee5a4"], embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]]);
 
-var addResponse = await string5Client.Add(["340a36ad-c38a-406c-be38-250174aee5a4"], embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]]);
-Trace.Assert(addResponse.Success);
-
-var getResponse = await string5Client.Get(["340a36ad-c38a-406c-be38-250174aee5a4"], include: ["metadatas", "documents", "embeddings"]);
-if (getResponse.Success)
+var getData = await string5Client.Get(["340a36ad-c38a-406c-be38-250174aee5a4"], include: ["metadatas", "documents", "embeddings"]);
+foreach (var entry in getData)
 {
-	foreach (var entry in getResponse.Data)
-	{
-		Console.WriteLine($"ID: {entry.Id}");
-	}
+	Console.WriteLine($"ID: {entry.Id}");
 }
 
-var queryResponse = await string5Client.Query([[1f, 0.5f, 0f, -0.5f, -1f], [1.5f, 0f, 2f, -1f, -1.5f]],
-	include: ["metadatas", "distances"]);
-if (queryResponse.Success)
+var queryData = await string5Client.Query([[1f, 0.5f, 0f, -0.5f, -1f], [1.5f, 0f, 2f, -1f, -1.5f]], include: ["metadatas", "distances"]);
+foreach (var item in queryData)
 {
-	foreach (var item in queryResponse.Data)
+	foreach (var entry in item)
 	{
-		foreach (var entry in item)
-		{
-			Console.WriteLine($"ID: {entry.Id} | Distance: {entry.Distance}");
-		}
+		Console.WriteLine($"ID: {entry.Id} | Distance: {entry.Distance}");
 	}
 }
