@@ -1,6 +1,6 @@
 ﻿namespace ChromaDB.Client.Models;
 
-public class CollectionQueryEntry
+public class ChromaCollectionQueryEntry
 {
 	public string Id { get; }
 	public float Distance { get; init; }
@@ -10,7 +10,7 @@ public class CollectionQueryEntry
 	public List<string?>? Uris { get; init; }
 	public dynamic? Data { get; init; }
 
-	public CollectionQueryEntry(string id)
+	public ChromaCollectionQueryEntry(string id)
 	{
 		Id = id;
 	}

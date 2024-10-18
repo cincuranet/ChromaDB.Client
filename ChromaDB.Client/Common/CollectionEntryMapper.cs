@@ -1,7 +1,7 @@
 ﻿using ChromaDB.Client.Models;
 using ChromaDB.Client.Models.Responses;
 
-namespace ChromaDB.Client.Common.Mappers;
+namespace ChromaDB.Client.Common;
 
 internal static class CollectionEntryMapper
 {

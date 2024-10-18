@@ -10,7 +10,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		var result = await client.Query([Embeddings1],
-			include: ["distances", "embeddings"]);
+			include: ChromaQueryInclude.Distances | ChromaQueryInclude.Embeddings);
 		Assert.That(result, Has.Count.EqualTo(1));
 		Assert.That(result[0], Has.Count.EqualTo(2));
 		Assert.That(result[0].Select(x => x.Distance), Has.Some.Not.EqualTo(0));
@@ -27,7 +27,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		var result = await client.Query([Embeddings1],
-			include: ["distances", "embeddings", "metadatas", "documents"]);
+			include: ChromaQueryInclude.Distances | ChromaQueryInclude.Embeddings | ChromaQueryInclude.Metadatas | ChromaQueryInclude.Documents);
 		Assert.That(result, Has.Count.EqualTo(1));
 		Assert.That(result[0], Has.Count.EqualTo(2));
 		Assert.That(result[0].Select(x => x.Distance), Has.Some.Not.EqualTo(0));
@@ -44,7 +44,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		var result = await client.Query([Embeddings1, Embeddings2],
-			include: ["distances", "embeddings"]);
+			include: ChromaQueryInclude.Distances | ChromaQueryInclude.Embeddings);
 		Assert.That(result, Has.Count.EqualTo(2));
 		Assert.That(result[0], Has.Count.EqualTo(2));
 		Assert.That(result[0].Select(x => x.Distance), Has.Some.Not.EqualTo(0));
@@ -69,7 +69,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		var result = await client.Query([Embeddings1, Embeddings2],
-			include: ["distances", "embeddings", "metadatas", "documents"]);
+			include: ChromaQueryInclude.Distances | ChromaQueryInclude.Embeddings | ChromaQueryInclude.Metadatas | ChromaQueryInclude.Documents);
 		Assert.That(result, Has.Count.EqualTo(2));
 		Assert.That(result[0], Has.Count.EqualTo(2));
 		Assert.That(result[0].Select(x => x.Distance), Has.Some.Not.EqualTo(0));
@@ -94,7 +94,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		var result = await client.Query([Embeddings1],
-			include: ["distances", "embeddings"],
+			include: ChromaQueryInclude.Distances | ChromaQueryInclude.Embeddings,
 			nResults: 1);
 		Assert.That(result, Has.Count.EqualTo(1));
 		Assert.That(result[0], Has.Count.EqualTo(1));
@@ -110,7 +110,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 		var client = await Init();
 		var result = await client.Query([Embeddings1, Embeddings2],
 			where: new Dictionary<string, object> { { MetadataKey2, new Dictionary<string, object> { { "$lt", Metadata2[MetadataKey2] } } } },
-			include: ["distances"]);
+			include: ChromaQueryInclude.Distances);
 		Assert.That(result, Has.Count.EqualTo(2));
 		Assert.That(result[0], Has.Count.EqualTo(1));
 		Assert.That(result[0][0].Distance, Is.EqualTo(0));
@@ -132,7 +132,7 @@ public class CollectionClientQueryTests : ChromaDBTestsBase
 		var client = await Init();
 		var result = await client.Query([Embeddings1, Embeddings2],
 			whereDocument: new Dictionary<string, object> { { "$not_contains", Doc2[^1] } },
-			include: ["distances"]);
+			include: ChromaQueryInclude.Distances);
 		Assert.That(result, Has.Count.EqualTo(2));
 		Assert.That(result[0], Has.Count.EqualTo(1));
 		Assert.That(result[0][0].Distance, Is.EqualTo(0));

@@ -1,4 +1,4 @@
-﻿using ChromaDB.Client.Common.Constants;
+﻿using ChromaDB.Client.Common;
 
 namespace ChromaDB.Client;
 

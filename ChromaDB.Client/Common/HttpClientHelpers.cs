@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using ChromaDB.Client.Models.Requests;
 using ChromaDB.Client.Models.Responses;
 
-namespace ChromaDB.Client.Common.Helpers;
+namespace ChromaDB.Client.Common;
 
 internal static partial class HttpClientHelpers
 {

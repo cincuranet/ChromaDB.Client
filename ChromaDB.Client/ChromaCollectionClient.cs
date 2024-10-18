@@ -1,5 +1,4 @@
-﻿using ChromaDB.Client.Common.Helpers;
-using ChromaDB.Client.Common.Mappers;
+﻿using ChromaDB.Client.Common;
 using ChromaDB.Client.Models;
 using ChromaDB.Client.Models.Requests;
 using ChromaDB.Client.Models.Responses;
@@ -21,7 +20,7 @@ public class ChromaCollectionClient
 
 	public ChromaCollection Collection => _collection;
 
-	public async Task<List<ChromaCollectionEntry>> Get(List<string>? ids = null, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, int? limit = null, int? offset = null, List<string>? include = null)
+	public async Task<List<ChromaCollectionEntry>> Get(List<string>? ids = null, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, int? limit = null, int? offset = null, ChromaGetInclude? include = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -32,13 +31,13 @@ public class ChromaCollectionClient
 			WhereDocument = whereDocument,
 			Limit = limit,
 			Offset = offset,
-			Include = include ?? ["metadatas", "documents"],
+			Include = (include ?? ChromaGetInclude.Metadatas | ChromaGetInclude.Documents).ToInclude(),
 		};
 		var response = await _httpClient.Post<CollectionGetRequest, CollectionEntriesGetResponse>("collections/{collection_id}/get", request, requestParams);
 		return response.Map() ?? [];
 	}
 
-	public async Task<List<List<CollectionQueryEntry>>> Query(List<ReadOnlyMemory<float>> queryEmbeddings, int nResults = 10, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, List<string>? include = null)
+	public async Task<List<List<ChromaCollectionQueryEntry>>> Query(List<ReadOnlyMemory<float>> queryEmbeddings, int nResults = 10, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, ChromaQueryInclude? include = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -48,7 +47,7 @@ public class ChromaCollectionClient
 			NResults = nResults,
 			Where = where,
 			WhereDocument = whereDocument,
-			Include = include ?? ["metadatas", "documents", "distances"],
+			Include = (include ?? ChromaQueryInclude.Metadatas | ChromaQueryInclude.Documents | ChromaQueryInclude.Distances).ToInclude(),
 		};
 		var response = await _httpClient.Post<CollectionQueryRequest, CollectionEntriesQueryResponse>("collections/{collection_id}/query", request, requestParams);
 		return response.Map() ?? [];
