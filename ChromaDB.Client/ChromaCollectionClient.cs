@@ -38,7 +38,7 @@ public class ChromaCollectionClient
 		return response.Map() ?? [];
 	}
 
-	public async Task<List<List<CollectionQueryEntry>>> Query(List<List<float>> queryEmbeddings, int nResults = 10, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, List<string>? include = null)
+	public async Task<List<List<CollectionQueryEntry>>> Query(List<ReadOnlyMemory<float>> queryEmbeddings, int nResults = 10, Dictionary<string, object>? where = null, Dictionary<string, object>? whereDocument = null, List<string>? include = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -54,7 +54,7 @@ public class ChromaCollectionClient
 		return response.Map() ?? [];
 	}
 
-	public async Task Add(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
+	public async Task Add(List<string> ids, List<ReadOnlyMemory<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -68,7 +68,7 @@ public class ChromaCollectionClient
 		await _httpClient.Post("collections/{collection_id}/add", request, requestParams);
 	}
 
-	public async Task Update(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
+	public async Task Update(List<string> ids, List<ReadOnlyMemory<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);
@@ -82,7 +82,7 @@ public class ChromaCollectionClient
 		await _httpClient.Post("collections/{collection_id}/update", request, requestParams);
 	}
 
-	public async Task Upsert(List<string> ids, List<List<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
+	public async Task Upsert(List<string> ids, List<ReadOnlyMemory<float>>? embeddings = null, List<Dictionary<string, object>>? metadatas = null, List<string>? documents = null)
 	{
 		var requestParams = new RequestQueryParams()
 			.Insert("{collection_id}", _collection.Id);

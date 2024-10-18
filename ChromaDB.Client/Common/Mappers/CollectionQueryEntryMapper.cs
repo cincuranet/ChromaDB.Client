@@ -11,7 +11,7 @@ internal static class CollectionQueryEntryMapper
 			.Select((_, i) => response.Ids[i]
 				.Select((id, j) => new CollectionQueryEntry(id)
 				{
-					Distance = response.Distances[i][j],
+					Distance = response.Distances[i].Span[j],
 					Metadata = response.Metadatas?[i][j],
 					Embeddings = response.Embeddings?[i][j],
 					Document = response.Documents?[i][j],

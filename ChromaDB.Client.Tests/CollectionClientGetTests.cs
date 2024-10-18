@@ -240,8 +240,8 @@ public class CollectionClientGetTests : ChromaDBTestsBase
 
 	static readonly string Id1 = "id1";
 	static readonly string Id2 = "id2";
-	static readonly List<float> Embeddings1 = [1, 2, 3];
-	static readonly List<float> Embeddings2 = [1.4f, 1.5f, 99.33f];
+	static readonly ReadOnlyMemory<float> Embeddings1 = new([1, 2, 3]);
+	static readonly ReadOnlyMemory<float> Embeddings2 = new([1.4f, 1.5f, 99.33f]);
 	static readonly string MetadataKey1 = "key1";
 	static readonly string MetadataKey2 = "key2";
 	static readonly Dictionary<string, object> Metadata1 = new()

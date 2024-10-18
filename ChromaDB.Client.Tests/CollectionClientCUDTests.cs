@@ -17,7 +17,7 @@ public class CollectionClientCUDTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		await client.Add([$"{Guid.NewGuid()}"],
-			embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]]);
+			embeddings: [new([1f, 0.5f, 0f, -0.5f, -1f])]);
 	}
 
 	[Test]
@@ -45,7 +45,7 @@ public class CollectionClientCUDTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		await client.Add([$"{Guid.NewGuid()}"],
-			embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]],
+			embeddings: [new([1f, 0.5f, 0f, -0.5f, -1f])],
 			metadatas: [new Dictionary<string, object>
 			{
 				{ "key", "value" },
@@ -72,7 +72,7 @@ public class CollectionClientCUDTests : ChromaDBTestsBase
 		var client = await Init();
 		await client.Add([id]);
 		await client.Update([id],
-			embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]]);
+			embeddings: [new([1f, 0.5f, 0f, -0.5f, -1f])]);
 	}
 
 	[Test]
@@ -109,7 +109,7 @@ public class CollectionClientCUDTests : ChromaDBTestsBase
 		var client = await Init();
 		await client.Add([id]);
 		await client.Update([id],
-			embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]],
+			embeddings: [new([1f, 0.5f, 0f, -0.5f, -1f])],
 			metadatas: [new Dictionary<string, object>
 			{
 				{ "key", "value" },
@@ -130,7 +130,7 @@ public class CollectionClientCUDTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		await client.Upsert([$"{Guid.NewGuid()}"],
-			embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]]);
+			embeddings: [new([1f, 0.5f, 0f, -0.5f, -1f])]);
 	}
 
 	[Test]
@@ -158,7 +158,7 @@ public class CollectionClientCUDTests : ChromaDBTestsBase
 	{
 		var client = await Init();
 		await client.Upsert([$"{Guid.NewGuid()}"],
-			embeddings: [[1f, 0.5f, 0f, -0.5f, -1f]],
+			embeddings: [new([1f, 0.5f, 0f, -0.5f, -1f])],
 			metadatas: [new Dictionary<string, object>
 			{
 				{ "key", "value" },
